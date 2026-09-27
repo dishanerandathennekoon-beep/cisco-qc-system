@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CISCO QC - Master Control Portal</title>
+
+  <!-- Bootstrap 5 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <!-- Premium Modern Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --card-bg: rgba(21, 32, 62, 0.75);
+      --card-hover: rgba(30, 43, 80, 0.9);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-purple: #c084fc;
+      --accent-orange: #fb923c;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(52, 211, 153, 0.1) 0px, transparent 50%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Top Executive Banner */
+    .portal-header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-bottom: 3px solid var(--accent-blue);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #ffffff 30%, var(--accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-pill {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .clock-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Interactive Portal Cards */
+    .portal-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-card:hover {
+      background: var(--card-hover);
+      transform: translateY(-6px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      color: inherit;
+    }
+
+    .icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+    }
+
+    .icon-input { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .icon-reports { background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); border: 1px solid rgba(192, 132, 252, 0.3); }
+    .icon-admin { background: rgba(251, 146, 60, 0.15); color: var(--accent-orange); border: 1px solid rgba(251, 146, 60, 0.3); }
+    .icon-tv { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); border: 1px solid rgba(52, 211, 153, 0.3); }
+
+    .action-btn {
+      margin-top: 18px;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 10px 16px;
+      text-align: center;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+
+    /* Server Info Box */
+    .info-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+    }
+  </style>
+</head>
+<body class="p-3 p-md-4">
+
+  <div class="container-fluid max-width-xl">
+
+    <!-- Top Portal Header -->
+    <div class="portal-header p-3 px-4 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="bg-primary bg-opacity-20 p-3 rounded-3 border border-primary border-opacity-25 d-none d-sm-block">
+          <i class="bi bi-diagram-3-fill text-info fs-2"></i>
+        </div>
+        <div>
+          <h2 class="m-0 brand-title">CISCO SPECIALITY PACKAGING</h2>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="status-pill"><span class="pulse-dot"></span> CENTRAL QC SYSTEM ONLINE</span>
+            <span class="text-secondary small">| Local Hotspot Network</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <div id="clock" class="clock-display">00:00:00</div>
+        <div id="fullDate" class="text-secondary small fw-semibold">Loading Date...</div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: Core Operations Apps -->
+    <div class="section-label">
+      <i class="bi bi-grid-fill text-info"></i> Core Operations & Control
+    </div>
+
+    <div class="row g-3 mb-5">
+      
+      <!-- 1. Data Entry App -->
+      <div class="col-lg-4 col-md-6">
+        <a href="/input" class="portal-card">
+          <div>
+            <div class="icon-box icon-input">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <h4 class="fw-bold mb-2">QC Data Entry App</h4>
+            <p class="text-secondary small m-0">Mobile & Tablet optimized inspection form for factory floor inspectors across all 5 plants.</p>
+          </div>
+          <div class="btn btn-primary action-btn">
+            Open Data Input App <i class="bi bi-arrow-right ms-1"></i>
+          </div>
+        </a>
+      </div>
+
+      <!-- 2. Reports & History -->
+      <div class="col-lg-4 col-md-6">
+        <a href="/reports" class="portal-card">
+          <div>
+            <div class="icon-box icon-reports">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-2">Reports & History Log</h4>
+            <p class="text-secondary small m-0">Filter database logs by Date, Machine, Product or Bag Size and export Executive PDF Reports.</p>
+          </div>
+          <div class="btn btn-purple text-white action-btn" style="background-color: #9333ea;">
+            View History & Export PDF <i class="bi bi-arrow-right ms-1"></i>
+          </div>
+        </a>
+      </div>
+
+      <!-- 3. Central TV Control Center -->
+      <div class="col-lg-4 col-md-12">
+        <a href="/admin" class="portal-card">
+          <div>
+            <div class="icon-box icon-admin">
+              <i class="bi bi-sliders"></i>
+            </div>
+            <h4 class="fw-bold mb-2">Central TV Controller</h4>
+            <p class="text-secondary small m-0">Lab / Control room dashboard to route plant screens and send live factory announcements.</p>
+          </div>
+          <div class="btn btn-warning text-dark action-btn fw-bold">
+            Open TV Control Room <i class="bi bi-arrow-right ms-1"></i>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- SECTION 2: Plant Live TV Displays -->
+    <div class="section-label">
+      <i class="bi bi-tv-fill text-success"></i> Plant Live Display Network
+    </div>
+
+    <div class="row g-3 mb-4">
+
+      <!-- Central Lab / All Plants -->
+      <div class="col-md-4 col-sm-6">
+        <a href="/tv?plant=all" class="portal-card">
+          <div>
+            <div class="icon-box icon-tv">
+              <i class="bi bi-border-all"></i>
+            </div>
+            <h5 class="fw-bold mb-1">🏢 Central Lab Display</h5>
+            <p class="text-secondary small m-0">Unified live view showing active records from all factory plants.</p>
+          </div>
+          <div class="btn btn-outline-success action-btn">Launch Display <i class="bi bi-box-arrow-up-right ms-1"></i></div>
+        </a>
+      </div>
+
+      <!-- Plant 01 -->
+      <div class="col-md-4 col-sm-6">
+        <a href="/tv?plant=Plant 1" class="portal-card">
+          <div>
+            <div class="icon-box icon-tv">
+              <i class="bi bi-building"></i>
+            </div>
+            <h5 class="fw-bold mb-1">🏭 Plant 01 Display</h5>
+            <p class="text-secondary small m-0">Dedicated real-time board for Plant 01 machines.</p>
+          </div>
+          <div class="btn btn-outline-info action-btn">Launch Display <i class="bi bi-box-arrow-up-right ms-1"></i></div>
+        </a>
+      </div>
+
+      <!-- Husky Plant -->
+      <div class="col-md-4 col-sm-6">
+        <a href="/tv?plant=Husky" class="portal-card">
+          <div>
+            <div class="icon-box icon-tv">
+              <i class="bi bi-cpu-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-1">🏭 Husky Plant Display</h5>
+            <p class="text-secondary small m-0">Dedicated real-time board for Husky molding plant.</p>
+          </div>
+          <div class="btn btn-outline-info action-btn">Launch Display <i class="bi bi-box-arrow-up-right ms-1"></i></div>
+        </a>
+      </div>
+
+      <!-- Plant 04 -->
+      <div class="col-md-4 col-sm-6">
+        <a href="/tv?plant=Plant 4" class="portal-card">
+          <div>
+            <div class="icon-box icon-tv">
+              <i class="bi bi-building"></i>
+            </div>
+            <h5 class="fw-bold mb-1">🏭 Plant 04 Display</h5>
+            <p class="text-secondary small m-0">Dedicated real-time board for Plant 04 machines.</p>
+          </div>
+          <div class="btn btn-outline-info action-btn">Launch Display <i class="bi bi-box-arrow-up-right ms-1"></i></div>
+        </a>
+      </div>
+
+      <!-- Plant 05 -->
+      <div class="col-md-4 col-sm-6">
+        <a href="/tv?plant=Plant 5" class="portal-card">
+          <div>
+            <div class="icon-box icon-tv">
+              <i class="bi bi-building"></i>
+            </div>
+            <h5 class="fw-bold mb-1">🏭 Plant 05 Display</h5>
+            <p class="text-secondary small m-0">Dedicated real-time board for Plant 05 machines.</p>
+          </div>
+          <div class="btn btn-outline-info action-btn">Launch Display <i class="bi bi-box-arrow-up-right ms-1"></i></div>
+        </a>
+      </div>
+
+      <!-- B.C.M. Plant -->
+      <div class="col-md-4 col-sm-6">
+        <a href="/tv?plant=BCM" class="portal-card">
+          <div>
+            <div class="icon-box icon-tv">
+              <i class="bi bi-gear-wide-connected"></i>
+            </div>
+            <h5 class="fw-bold mb-1">🏭 B.C.M. Plant Display</h5>
+            <p class="text-secondary small m-0">Dedicated real-time board for B.C.M. plant machines.</p>
+          </div>
+          <div class="btn btn-outline-info action-btn">Launch Display <i class="bi bi-box-arrow-up-right ms-1"></i></div>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- SECTION 3: System Utilities & Local Server Information -->
+    <div class="info-box d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+      <div class="d-flex align-items-center gap-3">
+        <i class="bi bi-router-fill text-info fs-3"></i>
+        <div>
+          <div class="fw-bold text-white">Local Server Address & IP</div>
+          <div class="text-secondary small font-monospace">http://10.138.55.26:3000</div>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline-light" onclick="copyServerURL()">
+        <i class="bi bi-copy me-1"></i> Copy Network URL
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // Live Clock & Date
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toLocaleTimeString();
+      document.getElementById('fullDate').innerText = now.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    }, 1000);
+
+    function copyServerURL() {
+      navigator.clipboard.writeText('http://10.138.55.26:3000');
+      alert('Local Server URL (http://10.138.55.26:3000) copied to clipboard!');
+    }
+  </script>
+</body>
+</html>

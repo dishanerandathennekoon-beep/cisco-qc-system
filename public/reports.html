@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CISCO QC - Reports & Data Export</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --card-bg: #0b1329;
+      --border-color: rgba(255, 255, 255, 0.15);
+      --accent-blue: #00f0ff;
+      --accent-green: #00ff66;
+      --accent-yellow: #ffcc00;
+      --accent-red: #ff3366;
+      --text-main: #ffffff;
+      --text-sub: #94a3b8;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      padding: 16px 10px;
+    }
+
+    .report-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 7, 18, 0.98);
+      backdrop-filter: blur(20px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .auth-card {
+      max-width: 420px;
+      width: 100%;
+      background: #0f172a;
+      border: 2px solid #0284c7;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 0 35px rgba(2, 132, 199, 0.35);
+    }
+
+    .btn-excel {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-pdf {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .form-control, .form-select {
+      background-color: #030712 !important;
+      border: 1px solid var(--border-color) !important;
+      color: #ffffff !important;
+      border-radius: 10px !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent-blue) !important;
+      box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.25) !important;
+    }
+
+    .table-responsive-custom {
+      width: 100%;
+      overflow-x: auto !important;
+      overflow-y: auto;
+      max-height: 65vh;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background-color: #0b1329 !important;
+    }
+
+    .table-custom {
+      width: 100%;
+      min-width: 1100px;
+      margin: 0;
+      color: #ffffff !important;
+      border-collapse: separate;
+      border-spacing: 0;
+      background-color: transparent !important;
+    }
+
+    .table-custom thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #1e293b !important;
+      color: var(--accent-yellow) !important;
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 12px 10px;
+      text-align: center;
+      border-bottom: 2px solid #334155 !important;
+      white-space: nowrap;
+    }
+
+    .table-custom tbody tr {
+      background: rgba(15, 23, 42, 0.9) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .table-custom tbody tr:hover {
+      background: rgba(0, 240, 255, 0.1) !important;
+    }
+
+    .table-custom td {
+      padding: 10px 8px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #ffffff !important;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      background: transparent !important;
+    }
+
+    .product-badge {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1.5px solid var(--accent-blue);
+      color: #ffffff !important;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: inline-block;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+    }
+
+    .machine-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--accent-blue) !important;
+      border: 1px solid var(--accent-blue);
+    }
+
+    .batch-text {
+      color: var(--accent-yellow) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .weight-tag {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-green) !important;
+      font-weight: 800;
+      font-size: 1.05rem;
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.3);
+    }
+
+    .senior-qc-text {
+      color: var(--accent-blue) !important;
+      font-weight: 800;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 10px 5px; }
+      .report-card { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PROFESSIONAL CISCO BRANDED AUTH POPUP OVERLAY -->
+  <div id="reportsAuthOverlay" class="auth-overlay">
+    <div class="auth-card text-center">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info border border-info rounded-circle p-3 mb-2" style="width: 65px; height: 65px;">
+          <i class="bi bi-shield-lock-fill fs-1"></i>
+        </div>
+        <h6 class="text-info fw-black text-uppercase tracking-wider mb-1" style="font-size: 0.75rem; letter-spacing: 1.5px;">CISCO SPECIALITY PACKAGING</h6>
+        <h4 class="fw-extrabold text-white mb-0">REPORTS ACCESS LOGIN</h4>
+        <small class="text-secondary d-block mt-1">Authorized Management Only</small>
+      </div>
+
+      <div class="mb-3 text-start">
+        <label class="form-label text-secondary small font-monospace fw-bold">Enter Security Password:</label>
+        <div class="input-group">
+          <input type="password" id="reportsAuthPass" class="form-control text-center fs-5 fw-bold bg-dark text-white border-secondary" placeholder="••••••••" onkeyup="if(event.key==='Enter') verifyReportsPass()">
+          <button class="btn btn-outline-info" type="button" onclick="togglePassVisibility('reportsAuthPass', 'eyeIconReports')">
+            <i id="eyeIconReports" class="bi bi-eye-slash-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-info fw-bold w-100 py-2.5 fs-6 text-dark text-uppercase shadow-sm" onclick="verifyReportsPass()">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Unlock Reports View
+      </button>
+    </div>
+  </div>
+
+  <div class="container-fluid max-w-1200">
+    <div class="report-card">
+      
+      <!-- Header Bar & Buttons -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+          <h4 class="m-0 fw-bold text-white"><i class="bi bi-file-earmark-bar-graph me-2 text-info"></i>CISCO QC Reports</h4>
+          <small class="text-secondary">Historical quality data inspection logs & export analytics</small>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn btn-excel btn-sm" onclick="exportToExcel()">
+            <i class="bi bi-file-earmark-excel-fill me-1"></i> Excel Export
+          </button>
+          <button type="button" class="btn btn-pdf btn-sm" onclick="exportToPDF()">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF Export
+          </button>
+          <a href="/" class="btn btn-sm btn-outline-info rounded-3 fw-bold"><i class="bi bi-house-fill me-1"></i> Home</a>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="row g-2 mb-3 bg-dark p-3 rounded-3 border border-secondary border-opacity-25">
+        <div class="col-6 col-md-2">
+          <label class="form-label text-info small fw-bold m-0">Plant</label>
+          <select id="filterPlant" class="form-select form-select-sm mt-1 fw-bold" onchange="applyFilters()">
+            <option value="all">🏢 All Plants</option>
+            <option value="Plant 1">Plant 01</option>
+            <option value="Husky">Husky</option>
+            <option value="Plant 4">Plant 04</option>
+            <option value="Plant 05">Plant 05</option>
+            <option value="BCM">BCM</option>
+          </select>
+        </div>
+
+        <div class="col-6 col-md-2">
+          <label class="form-label text-info small fw-bold m-0">Shift</label>
+          <select id="filterShift" class="form-select form-select-sm mt-1 fw-bold" onchange="applyFilters()">
+            <option value="all">🕒 All Shifts</option>
+            <option value="Shift 01">Shift 01</option>
+            <option value="Shift 02">Shift 02</option>
+          </select>
+        </div>
+
+        <div class="col-6 col-md-2">
+          <label class="form-label text-info small fw-bold m-0">From Date</label>
+          <input type="date" id="filterFromDate" class="form-control form-control-sm mt-1 fw-bold" onchange="applyFilters()">
+        </div>
+
+        <div class="col-6 col-md-2">
+          <label class="form-label text-info small fw-bold m-0">To Date</label>
+          <input type="date" id="filterToDate" class="form-control form-control-sm mt-1 fw-bold" onchange="applyFilters()">
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label text-info small fw-bold m-0">Search Keyword</label>
+          <input type="text" id="filterSearch" class="form-control form-control-sm mt-1 fw-bold" placeholder="Product / Machine / Inspector..." oninput="applyFilters()">
+        </div>
+
+        <div class="col-12 col-md-1 d-flex align-items-end">
+          <button class="btn btn-sm btn-outline-info w-100 fw-bold mt-2" onclick="resetFilters()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="d-flex justify-content-between align-items-center mb-2 text-secondary small">
+        <div>Total Records Count: <strong class="text-white fs-6 font-monospace" id="recordCount">0</strong></div>
+        <div id="lastSyncTime" class="font-monospace">Refreshed: -</div>
+      </div>
+
+      <!-- High-Contrast Scrollable Data Table Container -->
+      <div class="table-responsive-custom">
+        <table class="table table-custom">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date & Time</th>
+              <th>Plant</th>
+              <th>Machine</th>
+              <th>Product Name</th>
+              <th>Batch No</th>
+              <th>Bag Size</th>
+              <th>Packing</th>
+              <th>Colour</th>
+              <th>Weight (g)</th>
+              <th>Line QC</th>
+              <th>Senior QC</th>
+              <th>Shift</th>
+            </tr>
+          </thead>
+          <tbody id="reportTableBody">
+            <tr>
+              <td colspan="13" class="py-5 text-center text-muted fs-6">
+                <div class="spinner-border text-info mb-2" role="status"></div>
+                <div>Fetching Historical Inspection Records...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Toggle Password Visibility (Eye Icon)
+    function togglePassVisibility(inputId, eyeIconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(eyeIconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye-slash-fill');
+        icon.classList.add('bi-eye-fill');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-fill');
+        icon.classList.add('bi-eye-slash-fill');
+      }
+    }
+
+    // Always require password on page enter/reload
+    async function verifyReportsPass() {
+      const pass = document.getElementById('reportsAuthPass').value;
+      if (!pass) {
+        alert("⚠️ කරුණාකර Password එක ඇතුළත් කරන්න.");
+        return;
+      }
+      try {
+        const res = await fetch('/api/verify-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module_name: 'reports', password: pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('reportsAuthOverlay').style.display = 'none';
+        } else {
+          alert("❌ වැරදි Password එකකි! නැවත උත්සාහ කරන්න.");
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    let rawRecords = [];
+    let filteredRecords = [];
+
+    async function fetchReportData() {
+      try {
+        const res = await fetch('/api/qc-history');
+        rawRecords = await res.json();
+        
+        rawRecords = rawRecords.filter(r => r.machine_name !== 'SYSTEM_SHIFT_UPDATE');
+        
+        applyFilters();
+        document.getElementById('lastSyncTime').innerText = `Refreshed: ${new Date().toLocaleTimeString()}`;
+      } catch (err) {
+        console.error("Error fetching report history:", err);
+      }
+    }
+
+    function applyFilters() {
+      const plantVal = document.getElementById('filterPlant').value.toLowerCase();
+      const shiftVal = document.getElementById('filterShift').value.toLowerCase();
+      const fromDateVal = document.getElementById('filterFromDate').value;
+      const toDateVal = document.getElementById('filterToDate').value;
+      const searchVal = document.getElementById('filterSearch').value.toLowerCase();
+
+      filteredRecords = rawRecords.filter(r => {
+        const matchPlant = plantVal === 'all' || (r.plant_name && r.plant_name.toLowerCase().includes(plantVal));
+        const matchShift = shiftVal === 'all' || (r.shift_name && r.shift_name.toLowerCase().includes(shiftVal));
+        
+        let matchDate = true;
+        if (r.created_at) {
+          const recDate = r.created_at.slice(0, 10);
+          if (fromDateVal && recDate < fromDateVal) matchDate = false;
+          if (toDateVal && recDate > toDateVal) matchDate = false;
+        }
+
+        const searchStr = `${r.product_name} ${r.machine_name} ${r.batch_number} ${r.qc_inspector} ${r.shift_leader}`.toLowerCase();
+        const matchSearch = !searchVal || searchStr.includes(searchVal);
+
+        return matchPlant && matchShift && matchDate && matchSearch;
+      });
+
+      renderTable(filteredRecords);
+    }
+
+    function resetFilters() {
+      document.getElementById('filterPlant').value = 'all';
+      document.getElementById('filterShift').value = 'all';
+      document.getElementById('filterFromDate').value = '';
+      document.getElementById('filterToDate').value = '';
+      document.getElementById('filterSearch').value = '';
+      applyFilters();
+    }
+
+    function renderTable(records) {
+      const tbody = document.getElementById('reportTableBody');
+      document.getElementById('recordCount').innerText = records.length;
+
+      if (records.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="13" class="py-4 text-center text-secondary fs-6">No matching inspection records found.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => `
+        <tr>
+          <td class="text-secondary font-monospace">${r.id}</td>
+          <td class="small text-nowrap text-light">${new Date(r.created_at).toLocaleString()}</td>
+          <td><span class="badge bg-secondary bg-opacity-20 text-info border border-info border-opacity-25">${r.plant_name || '-'}</span></td>
+          <td><span class="machine-badge">${r.machine_name}</span></td>
+          <td><span class="product-badge">${r.product_name}</span></td>
+          <td class="batch-text">${r.batch_number}</td>
+          <td class="text-white">${r.bag_size || '-'}</td>
+          <td class="text-white">${r.packing_size || '-'}</td>
+          <td class="text-white">${r.product_colour || '-'}</td>
+          <td class="weight-tag">${r.weight_grams}g</td>
+          <td class="text-white">${r.qc_inspector || '-'}</td>
+          <td class="senior-qc-text">${r.shift_leader || '-'}</td>
+          <td><span class="badge bg-dark border border-warning text-warning">${r.shift_name || '-'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function exportToExcel() {
+      if (!filteredRecords || filteredRecords.length === 0) {
+        alert("⚠️ Export කිරීමට Data නොමැත!");
+        return;
+      }
+
+      const excelData = filteredRecords.map(r => ({
+        "Record ID": r.id,
+        "Date & Time": new Date(r.created_at).toLocaleString(),
+        "Plant Name": r.plant_name || '-',
+        "Machine Name": r.machine_name,
+        "Product Name": r.product_name,
+        "Batch Number": r.batch_number,
+        "Bag Size": r.bag_size || '-',
+        "Packing Size": r.packing_size || '-',
+        "Colour": r.product_colour || '-',
+        "Weight (g)": r.weight_grams,
+        "Line QC Inspector": r.qc_inspector || '-',
+        "Senior QC (Shift Leader)": r.shift_leader || '-',
+        "Shift": r.shift_name || '-'
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "QC Inspection History");
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(workbook, `CISCO_QC_Report_${dateStr}.xlsx`);
+    }
+
+    function exportToPDF() {
+      if (!filteredRecords || filteredRecords.length === 0) {
+        alert("⚠️ Export කිරීමට Data නොමැත!");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('l', 'mm', 'a4');
+
+      doc.setFontSize(16);
+      doc.text("CISCO SPECIALITY PACKAGING - QC Inspection Report", 14, 15);
+      doc.setFontSize(9);
+      doc.text(`Generated Date: ${new Date().toLocaleString()} | Total Records: ${filteredRecords.length}`, 14, 22);
+
+      const tableColumn = ["ID", "Date & Time", "Plant", "Machine", "Product", "Batch", "Bag", "Pack", "Colour", "Weight", "Line QC", "Senior QC", "Shift"];
+      const tableRows = filteredRecords.map(r => [
+        r.id,
+        new Date(r.created_at).toLocaleString([], {month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'}),
+        r.plant_name || '-',
+        r.machine_name,
+        r.product_name,
+        r.batch_number,
+        r.bag_size || '-',
+        r.packing_size || '-',
+        r.product_colour || '-',
+        `${r.weight_grams}g`,
+        r.qc_inspector || '-',
+        r.shift_leader || '-',
+        r.shift_name || '-'
+      ]);
+
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 26,
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 2 },
+        headStyles: { fillColor: [15, 23, 42], textColor: [255, 204, 0], fontStyle: 'bold' }
+      });
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      doc.save(`CISCO_QC_Report_${dateStr}.pdf`);
+    }
+
+    fetchReportData();
+  </script>
+</body>
+</html>

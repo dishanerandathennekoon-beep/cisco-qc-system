@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CISCO QC - Shift & Senior QC Dedicated Entry</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #0b1329;
+      --card-bg: #15203e;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-red: #ff3366;
+      --accent-yellow: #ffcc00;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding-bottom: 90px;
+      min-height: 100vh;
+    }
+
+    .app-header {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 16px;
+    }
+
+    /* Professional Security Auth Overlay */
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 7, 18, 0.98);
+      backdrop-filter: blur(20px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .auth-card {
+      max-width: 420px;
+      width: 100%;
+      background: #0f172a;
+      border: 2px solid #0284c7;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 0 35px rgba(2, 132, 199, 0.35);
+    }
+
+    /* Dedicated Shift & Senior QC Option Card */
+    .shift-setup-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 2px solid var(--accent-blue);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.15);
+      margin-bottom: 16px;
+    }
+
+    .setup-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-shift-save {
+      background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+      color: #0b1329;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .plant-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .plant-tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .plant-tab-btn.active {
+      background: var(--accent-blue);
+      color: #0b1329;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    .machine-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .machine-title-badge {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 6px 14px;
+      border-radius: 10px;
+    }
+
+    .field-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+
+    .field-label span.req { color: var(--accent-red); font-size: 0.9rem; }
+
+    .form-control, .form-select {
+      background-color: #0b1329 !important;
+      border: 1px solid var(--border-color) !important;
+      color: #ffffff !important;
+      border-radius: 10px !important;
+      padding: 10px 12px !important;
+      font-size: 0.92rem !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent-blue) !important;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+    }
+
+    .form-control.input-error, .form-select.input-error {
+      border: 2px solid var(--accent-red) !important;
+      background-color: rgba(255, 51, 102, 0.1) !important;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-color);
+      padding: 12px 16px;
+      z-index: 100;
+    }
+
+    .btn-select-machine {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .btn-save-data {
+      background: #0284c7;
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .modal-content {
+      background-color: #15203e;
+      border: 1px solid var(--border-color);
+      color: #ffffff;
+      border-radius: 20px;
+    }
+
+    .machine-select-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PROFESSIONAL CISCO BRANDED AUTH POPUP OVERLAY -->
+  <div id="inputAuthOverlay" class="auth-overlay">
+    <div class="auth-card text-center">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info border border-info rounded-circle p-3 mb-2" style="width: 65px; height: 65px;">
+          <i class="bi bi-shield-lock-fill fs-1"></i>
+        </div>
+        <h6 class="text-info fw-black text-uppercase tracking-wider mb-1" style="font-size: 0.75rem; letter-spacing: 1.5px;">CISCO SPECIALITY PACKAGING</h6>
+        <h4 class="fw-extrabold text-white mb-0">QC DATA ENTRY LOGIN</h4>
+        <small class="text-secondary d-block mt-1">Authorized Operations Only</small>
+      </div>
+
+      <div class="mb-3 text-start">
+        <label class="form-label text-secondary small font-monospace fw-bold">Enter Security Password:</label>
+        <div class="input-group">
+          <input type="password" id="inputAuthPass" class="form-control text-center fs-5 fw-bold bg-dark text-white border-secondary" placeholder="••••••••" onkeyup="if(event.key==='Enter') verifyInputPass()">
+          <button class="btn btn-outline-info" type="button" onclick="togglePassVisibility('inputAuthPass', 'eyeIconInput')">
+            <i id="eyeIconInput" class="bi bi-eye-slash-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-info fw-bold w-100 py-2.5 fs-6 text-dark text-uppercase shadow-sm" onclick="verifyInputPass()">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Unlock Data Entry
+      </button>
+    </div>
+  </div>
+
+  <!-- Top App Header -->
+  <div class="app-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <a href="/" class="btn btn-sm btn-outline-info me-1 fw-bold" title="Go to Home Portal">
+        <i class="bi bi-house-fill"></i> Home
+      </a>
+      <div>
+        <h6 class="m-0 fw-bold"><i class="bi bi-pencil-square me-2 text-info"></i>CISCO QC INPUT</h6>
+        <small class="text-info fw-semibold" id="currentPlantTitle" style="font-size: 0.75rem;">Plant 01 Active</small>
+      </div>
+    </div>
+    <div class="text-end">
+      <span id="clock" class="text-secondary font-monospace small d-block">00:00:00</span>
+      <span class="badge bg-success bg-opacity-20 text-success small">System Online</span>
+    </div>
+  </div>
+
+  <div class="container-fluid pt-3 px-3">
+
+    <!-- Standalone Dedicated Shift & Senior QC Setup Card -->
+    <div class="shift-setup-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="setup-title m-0">
+          <i class="bi bi-sliders text-info fs-5"></i> Shift & Senior QC Setup
+        </div>
+        <span class="badge bg-primary bg-opacity-20 text-info border border-primary border-opacity-25" id="shiftStatusTag">Shift 01 Selected</span>
+      </div>
+
+      <div class="row g-2">
+        <div class="col-12 col-md-5">
+          <label class="field-label text-warning m-0"><i class="bi bi-clock-history me-1"></i>Select Shift <span class="req">*</span></label>
+          <select class="form-select form-select-sm mt-1 fw-bold" id="globalShiftSelect" onchange="onShiftChange(this.value)">
+            <option value="Shift 01" selected>Shift 01 (Day Shift)</option>
+            <option value="Shift 02">Shift 02 (Night Shift)</option>
+          </select>
+        </div>
+        
+        <div class="col-12 col-md-7">
+          <label class="field-label text-warning m-0"><i class="bi bi-person-badge-fill me-1"></i>Senior QC (Shift Leader) <span class="req">*</span></label>
+          <select class="form-select form-select-sm mt-1 fw-bold" id="globalSeniorQCSelect" onchange="handleSeniorQCChange(this)">
+            <option value="Mr. Mangala" selected>Mr. Mangala</option>
+            <option value="Mr. Gamini">Mr. Gamini</option>
+            <option value="__ADD_NEW_SENIOR__">➕ Add Custom Senior QC...</option>
+          </select>
+        </div>
+
+        <div class="col-12 mt-3 text-end">
+          <button type="button" class="btn btn-shift-save w-100 w-md-auto" onclick="saveShiftInfoOnly()">
+            <i class="bi bi-tv-fill me-1"></i> Shift Update කර TV එකට යවන්න
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plant Nav Tabs -->
+    <div class="plant-tabs">
+      <button type="button" class="plant-tab-btn" id="tab-Plant 1" onclick="switchPlant('Plant 1')">Plant 01</button>
+      <button type="button" class="plant-tab-btn" id="tab-Husky" onclick="switchPlant('Husky')">Husky Plant</button>
+      <button type="button" class="plant-tab-btn" id="tab-Plant 4" onclick="switchPlant('Plant 4')">Plant 04</button>
+      <button type="button" class="plant-tab-btn" id="tab-Plant 05" onclick="switchPlant('Plant 05')">Plant 05</button>
+      <button type="button" class="plant-tab-btn" id="tab-BCM" onclick="switchPlant('BCM')">B.C.M. Plant</button>
+    </div>
+
+    <!-- Main Inspection Form -->
+    <form id="qcInputForm" class="mt-3">
+      <div id="machineCardsList"></div>
+    </form>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="bottom-nav">
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-select-machine w-40" onclick="openMachineModal()">
+        <i class="bi bi-plus-circle me-1"></i> Select Machine
+      </button>
+      <button type="button" onclick="saveData()" class="btn btn-save-data w-60 flex-grow-1">
+        <i class="bi bi-send-fill me-1"></i> Save Machine Data
+      </button>
+    </div>
+  </div>
+
+  <!-- MACHINE SELECTION POPUP MODAL -->
+  <div class="modal fade" id="machineModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold" id="modalPlantTitle"><i class="bi bi-cpu me-2 text-info"></i>Select Machine</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-secondary small mb-3">Choose a machine from <span id="modalPlantName" class="text-info fw-bold">Plant 01</span>:</p>
+          <div class="row g-2" id="modalMachineGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle Password Visibility (Eye Icon)
+    function togglePassVisibility(inputId, eyeIconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(eyeIconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye-slash-fill');
+        icon.classList.add('bi-eye-fill');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-fill');
+        icon.classList.add('bi-eye-slash-fill');
+      }
+    }
+
+    // Always require password on page enter/reload
+    async function verifyInputPass() {
+      const pass = document.getElementById('inputAuthPass').value;
+      if (!pass) {
+        alert("⚠️ කරුණාකර Password එක ඇතුළත් කරන්න.");
+        return;
+      }
+      try {
+        const res = await fetch('/api/verify-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module_name: 'input', password: pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('inputAuthOverlay').style.display = 'none';
+        } else {
+          alert("❌ වැරදි Password එකකි! නැවත උත්සාහ කරන්න.");
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    const shiftDatabase = {
+      'Shift 01': { seniorQC: 'Mr. Mangala', inspectors: ['Dishan', 'Prasanna', 'Sanjeewa'] },
+      'Shift 02': { seniorQC: 'Mr. Gamini', inspectors: ['Eranga', 'Jeewantha', 'Neelaka'] }
+    };
+
+    const plantMachineDatabase = {
+      'Plant 1': ['Santo 01', 'Santo 02', 'Santo 03', 'Haitian 01', 'Haitian 02', 'Haitian 03', 'Haitian 04', 'Haitian 05', 'Haitian 06', 'CML 01', 'CML 02', 'CML 03', 'CML 04', 'CML 05', 'CML 06', 'EM 128', 'EM 168', 'JM 128'],
+      'Husky': ['Husky 01', 'Husky 02', 'Husky 03'],
+      'Plant 4': ['Synergy 01', 'Friend 01', 'Friend 02', 'Friend 03', 'Chum Power 01', 'Chum Power 02', 'Chum Power 03'],
+      'Plant 05': ['Synergy 02', 'Manual 01', 'Manual 02', 'Manual 03', 'Manual 04', 'E.B.M.', 'Friend 04', 'Friend 05', 'Friend 06', 'Friend 07', 'Santo 04', 'Santo 05'],
+      'BCM': ['BCM 01', 'BCM 02']
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let selectedPlant = urlParams.get('plant') || 'Plant 1';
+    let bsModal;
+
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      bsModal = new bootstrap.Modal(document.getElementById('machineModal'));
+      onShiftChange('Shift 01');
+      switchPlant(selectedPlant);
+    });
+
+    function onShiftChange(shiftKey) {
+      const shiftData = shiftDatabase[shiftKey] || shiftDatabase['Shift 01'];
+      document.getElementById('globalSeniorQCSelect').value = shiftData.seniorQC;
+      document.getElementById('shiftStatusTag').innerText = `${shiftKey} Selected`;
+
+      document.querySelectorAll('.machine-card').forEach(card => {
+        const inspectorSelect = card.querySelector('.inspector-select');
+        if (inspectorSelect) updateInspectorOptions(inspectorSelect, shiftKey);
+      });
+    }
+
+    function handleSeniorQCChange(selectEl) {
+      if (selectEl.value === '__ADD_NEW_SENIOR__') {
+        const newName = prompt("Enter New Senior QC (Shift Leader) Name:");
+        if (newName && newName.trim() !== "") {
+          const cleanName = newName.trim();
+          const option = document.createElement("option");
+          option.value = cleanName;
+          option.text = cleanName;
+          option.selected = true;
+          selectEl.add(option, selectEl.options[selectEl.options.length - 1]);
+        } else {
+          selectEl.selectedIndex = 0;
+        }
+      }
+    }
+
+    function updateInspectorOptions(selectEl, shiftKey) {
+      const currentVal = selectEl.value;
+      const shiftData = shiftDatabase[shiftKey] || shiftDatabase['Shift 01'];
+      
+      let optionsHtml = `<option value="" disabled selected>-- Select Line QC --</option>`;
+      shiftData.inspectors.forEach(name => { optionsHtml += `<option value="${name}">${name}</option>`; });
+      optionsHtml += `<option value="__ADD_NEW__">➕ Add New QC Name...</option>`;
+      
+      selectEl.innerHTML = optionsHtml;
+      if (shiftData.inspectors.includes(currentVal)) selectEl.value = currentVal;
+    }
+
+    function handleInspectorChange(selectEl) {
+      if (selectEl.value === '__ADD_NEW__') {
+        const newName = prompt("Enter New Line QC Inspector Name:");
+        if (newName && newName.trim() !== "") {
+          const cleanName = newName.trim();
+          const option = document.createElement("option");
+          option.value = cleanName;
+          option.text = cleanName;
+          option.selected = true;
+          selectEl.add(option, selectEl.options[selectEl.options.length - 1]);
+        } else {
+          selectEl.selectedIndex = 0;
+        }
+      }
+    }
+
+    async function saveShiftInfoOnly() {
+      const shiftName = document.getElementById('globalShiftSelect').value;
+      const shiftLeader = document.getElementById('globalSeniorQCSelect').value.trim();
+
+      if (!shiftLeader || shiftLeader === '__ADD_NEW_SENIOR__') {
+        alert("⚠️ REQUIRED: කරුණාකර Senior QC (Shift Leader) ගේ නම තෝරන්න!");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/update-shift', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shift_name: shiftName, shift_leader: shiftLeader })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          alert(`📺 [${shiftName}] සහ Senior QC [${shiftLeader}] සාර්ථකව TV Display එකට යවන ලදී!`);
+        } else {
+          alert("Error sending shift info: " + result.error);
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    function switchPlant(plant) {
+      selectedPlant = plant;
+      document.querySelectorAll('.plant-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeTab = document.getElementById(`tab-${plant}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      document.getElementById('currentPlantTitle').innerText = `${plant} Active Screen`;
+      const list = document.getElementById('machineCardsList');
+      list.innerHTML = '';
+
+      const initialMachines = plantMachineDatabase[plant] ? plantMachineDatabase[plant].slice(0, 2) : ['Machine 01'];
+      initialMachines.forEach(m => addMachineCard(m, plant));
+    }
+
+    function openMachineModal() {
+      document.getElementById('modalPlantName').innerText = selectedPlant;
+      const grid = document.getElementById('modalMachineGrid');
+      grid.innerHTML = '';
+
+      const machines = plantMachineDatabase[selectedPlant] || [];
+      machines.forEach(mName => {
+        const col = document.createElement('div');
+        col.className = 'col-6 col-md-4';
+        col.innerHTML = `<button type="button" class="btn machine-select-btn" onclick="selectMachineFromModal('${mName}')">${mName}</button>`;
+        grid.appendChild(col);
+      });
+      bsModal.show();
+    }
+
+    function selectMachineFromModal(mName) {
+      bsModal.hide();
+      const existingCard = document.querySelector(`.machine-card[data-machine="${mName}"]`);
+      if (existingCard) {
+        existingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      addMachineCard(mName, selectedPlant);
+    }
+
+    function addMachineCard(mName, plant) {
+      const list = document.getElementById('machineCardsList');
+      const currentShift = document.getElementById('globalShiftSelect').value;
+      const div = document.createElement('div');
+      div.className = "machine-card";
+      div.setAttribute('data-machine', mName);
+      div.setAttribute('data-plant', plant);
+
+      div.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="machine-title-badge">${mName}</span>
+          <button type="button" class="btn btn-sm text-danger" onclick="this.closest('.machine-card').remove()"><i class="bi bi-trash"></i></button>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-12 col-md-6">
+            <div class="field-label">Product Name <span class="req">*</span></div>
+            <input type="text" class="form-control product" placeholder="Enter Product Name">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="field-label">Batch No <span class="req">*</span></div>
+            <input type="text" class="form-control batch" placeholder="Batch No">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="field-label">Bag Size <span class="req">*</span></div>
+            <input type="text" class="form-control bag_size" placeholder="Size">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="field-label">Packing Size <span class="req">*</span></div>
+            <input type="text" class="form-control packing_size" placeholder="Packing">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="field-label">Colour <span class="req">*</span></div>
+            <input type="text" class="form-control colour" placeholder="Colour">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="field-label">Weight (g) <span class="req">*</span></div>
+            <input type="number" step="0.1" class="form-control weight" placeholder="0.0">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="field-label">Line QC Inspector <span class="req">*</span></div>
+            <select class="form-select inspector-select inspector" onchange="handleInspectorChange(this)"></select>
+          </div>
+        </div>
+      `;
+      list.appendChild(div);
+      
+      const selectEl = div.querySelector('.inspector-select');
+      updateInspectorOptions(selectEl, currentShift);
+    }
+
+    async function saveData() {
+      const shiftName = document.getElementById('globalShiftSelect').value;
+      const shiftLeader = document.getElementById('globalSeniorQCSelect').value.trim();
+
+      if (!shiftLeader || shiftLeader === '__ADD_NEW_SENIOR__') {
+        alert("⚠️ REQUIRED: කරුණාකර Senior QC (Shift Leader) ගේ නම තෝරන්න!");
+        return;
+      }
+
+      const cards = document.querySelectorAll('.machine-card');
+      const payload = [];
+      let missingFieldsList = [];
+      let hasError = false;
+
+      document.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('input-error'));
+
+      cards.forEach(card => {
+        const mName = card.getAttribute('data-machine');
+        const prodEl = card.querySelector('.product');
+        const batchEl = card.querySelector('.batch');
+        const bagEl = card.querySelector('.bag_size');
+        const packEl = card.querySelector('.packing_size');
+        const colourEl = card.querySelector('.colour');
+        const weightEl = card.querySelector('.weight');
+        const inspEl = card.querySelector('.inspector');
+
+        const prod = prodEl.value.trim();
+        const batch = batchEl.value.trim();
+        const bag_size = bagEl.value.trim();
+        const packing_size = packEl.value.trim();
+        const colour = colourEl.value.trim();
+        const weight = weightEl.value.trim();
+        const inspector = inspEl.value.trim();
+
+        const isTouched = prod || batch || bag_size || packing_size || colour || weight || inspector;
+
+        if (isTouched) {
+          let cardErrors = [];
+          if (!prod) { prodEl.classList.add('input-error'); cardErrors.push("Product Name"); }
+          if (!batch) { batchEl.classList.add('input-error'); cardErrors.push("Batch No"); }
+          if (!bag_size) { bagEl.classList.add('input-error'); cardErrors.push("Bag Size"); }
+          if (!packing_size) { packEl.classList.add('input-error'); cardErrors.push("Packing Size"); }
+          if (!colour) { colourEl.classList.add('input-error'); cardErrors.push("Colour"); }
+          if (!weight) { weightEl.classList.add('input-error'); cardErrors.push("Weight"); }
+          if (!inspector || inspector === '__ADD_NEW__') { inspEl.classList.add('input-error'); cardErrors.push("Line QC Inspector"); }
+
+          if (cardErrors.length > 0) {
+            hasError = true;
+            missingFieldsList.push(`• [${mName}] -> ${cardErrors.join(', ')}`);
+          } else {
+            payload.push({
+              plant: selectedPlant,
+              machine: mName,
+              product: prod,
+              batch: batch,
+              bag_size: bag_size,
+              packing_size: packing_size,
+              colour: colour,
+              weight: parseFloat(weight) || 0,
+              inspector: inspector,
+              shift_name: shiftName,
+              shift_leader: shiftLeader
+            });
+          }
+        }
+      });
+
+      if (hasError) {
+        alert("⚠️ REQUIRED FIELDS MISSING!\n\nපහත දැක්වෙන හිස්තැන් සියල්ලම සම්පූර්ණ කරන්න:\n\n" + missingFieldsList.join("\n"));
+        const firstError = document.querySelector('.input-error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      if (payload.length === 0) {
+        alert("⚠️ කරුණාකර අවම වශයෙන් එක් මැෂින් එකකවත් සම්පූර්ණ විස්තර ඇතුළත් කරන්න.");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/save-qc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          alert(`✅ [${shiftName}] දත්ත සාර්ථකව Database එකට සුරැකිනි!\nSenior QC: ${shiftLeader}`);
+          location.reload();
+        } else {
+          alert("Error saving data: " + result.error);
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+  </script>
+</body>
+</html>

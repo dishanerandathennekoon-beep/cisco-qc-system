@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CISCO QC - Central TV Control & Security Panel</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #060d18;
+      --card-bg: #0f172a;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-yellow: #ffcc00;
+      --accent-red: #ff3366;
+      --text-main: #f8fafc;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .admin-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .card-title-custom {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent-green);
+    }
+
+    .form-control, .form-select {
+      background-color: #0b1329 !important;
+      border: 1px solid var(--border-color) !important;
+      color: #ffffff !important;
+      border-radius: 10px !important;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-clear {
+      background: rgba(255, 51, 102, 0.15);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+
+    /* Auth Overlay Modal */
+    .auth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 7, 18, 0.98);
+      backdrop-filter: blur(20px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .auth-card {
+      max-width: 420px;
+      width: 100%;
+      background: #0f172a;
+      border: 2px solid #0284c7;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 0 35px rgba(2, 132, 199, 0.35);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PROFESSIONAL CISCO BRANDED ADMIN AUTH OVERLAY -->
+  <div id="adminAuthOverlay" class="auth-overlay">
+    <div class="auth-card text-center">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info border border-info rounded-circle p-3 mb-2" style="width: 65px; height: 65px;">
+          <i class="bi bi-shield-lock-fill fs-1"></i>
+        </div>
+        <h6 class="text-info fw-black text-uppercase tracking-wider mb-1" style="font-size: 0.75rem; letter-spacing: 1.5px;">CISCO SPECIALITY PACKAGING</h6>
+        <h4 class="fw-extrabold text-white mb-0">ADMIN CONTROL ACCESS</h4>
+        <small class="text-secondary d-block mt-1">Authorized Management Only</small>
+      </div>
+
+      <div class="mb-3 text-start">
+        <label class="form-label text-secondary small font-monospace fw-bold">Enter Admin Password:</label>
+        <div class="input-group">
+          <input type="password" id="adminAuthPass" class="form-control text-center fs-5 fw-bold bg-dark text-white border-secondary" placeholder="••••••••" onkeyup="if(event.key==='Enter') verifyAdminPass()">
+          <button class="btn btn-outline-info" type="button" onclick="togglePassVisibility('adminAuthPass', 'eyeIconAdmin')">
+            <i id="eyeIconAdmin" class="bi bi-eye-slash-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-info fw-bold w-100 py-2.5 fs-6 text-dark text-uppercase shadow-sm" onclick="verifyAdminPass()">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Unlock Admin Panel
+      </button>
+    </div>
+  </div>
+
+  <div class="container max-w-1000">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="m-0 fw-bold"><i class="bi bi-display-fill text-info me-2"></i>CENTRAL TV CONTROL & SECURITY</h4>
+        <small class="text-secondary">Factory floor display management & security console</small>
+      </div>
+      <a href="/" class="btn btn-sm btn-outline-info fw-bold"><i class="bi bi-house-fill me-1"></i> Home</a>
+    </div>
+
+    <!-- Executive Factory Overview KPI -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-box">
+          <small class="text-secondary fw-bold text-uppercase d-block">Active Shift</small>
+          <span class="stat-num text-warning fs-4" id="kpiShift">Shift 01</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-box">
+          <small class="text-secondary fw-bold text-uppercase d-block">Senior QC</small>
+          <span class="stat-num text-info fs-5" id="kpiLeader">Mr. Mangala</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-box">
+          <small class="text-secondary fw-bold text-uppercase d-block">Inspections Today</small>
+          <span class="stat-num" id="kpiInspections">0</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-box">
+          <small class="text-secondary fw-bold text-uppercase d-block">System Status</small>
+          <span class="stat-num text-success fs-5"><i class="bi bi-check-circle-fill me-1"></i> Protected</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSWORD MANAGEMENT SECTION -->
+    <div class="admin-card border-warning">
+      <div class="card-title-custom text-warning">
+        <i class="bi bi-key-fill text-warning fs-5"></i> System Passwords Management (මුරපද වෙනස් කිරීම)
+      </div>
+      <p class="text-secondary small">Input Screen, Reports Page, සහ Admin Panel සඳහා වන Passwords මෙතැනින් වෙනස් කරගත හැක:</p>
+
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label text-info small fw-bold">1. Data Input Password</label>
+          <div class="input-group">
+            <input type="text" id="passInputModule" class="form-control fw-bold" placeholder="New Input Pass">
+            <button class="btn btn-outline-info fw-bold" onclick="changePass('input', 'passInputModule')">Save</button>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label text-info small fw-bold">2. Reports Page Password</label>
+          <div class="input-group">
+            <input type="text" id="passReportsModule" class="form-control fw-bold" placeholder="New Reports Pass">
+            <button class="btn btn-outline-info fw-bold" onclick="changePass('reports', 'passReportsModule')">Save</button>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label text-warning small fw-bold">3. Admin Control Password</label>
+          <div class="input-group">
+            <input type="text" id="passAdminModule" class="form-control fw-bold" placeholder="New Admin Pass">
+            <button class="btn btn-outline-warning fw-bold" onclick="changePass('admin', 'passAdminModule')">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Broadcast Ticker Controller -->
+    <div class="admin-card">
+      <div class="card-title-custom">
+        <i class="bi bi-megaphone-fill text-warning"></i> Broadcast Announcement to All TV Displays
+      </div>
+      <div class="row g-2">
+        <div class="col-12 col-md-9">
+          <input type="text" id="broadcastInput" class="form-control" placeholder="E.g., 📢 Shift Handover Meeting at 2:00 PM in Main Office...">
+        </div>
+        <div class="col-12 col-md-3">
+          <select id="broadcastType" class="form-select fw-bold">
+            <option value="info" selected>ℹ️ Normal Info</option>
+            <option value="warning">⚠️ Warning Alert</option>
+            <option value="urgent">🚨 URGENT NOTICE</option>
+          </select>
+        </div>
+        <div class="col-12 text-end mt-3 d-flex gap-2 justify-content-end">
+          <button class="btn btn-clear" onclick="clearBroadcast()"><i class="bi bi-x-circle me-1"></i> Clear Message</button>
+          <button class="btn btn-action" onclick="sendBroadcast()"><i class="bi bi-send-fill me-1"></i> Broadcast to All TVs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master Shift & Senior QC Switch -->
+    <div class="admin-card">
+      <div class="card-title-custom">
+        <i class="bi bi-person-gear text-info"></i> Master Shift & Senior QC Control
+      </div>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label text-secondary small fw-bold">Active Shift</label>
+          <select id="masterShiftSelect" class="form-select fw-bold" onchange="onAdminShiftChange(this.value)">
+            <option value="Shift 01">Shift 01 (Day Shift)</option>
+            <option value="Shift 02">Shift 02 (Night Shift)</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label text-secondary small fw-bold">Senior QC (Shift Leader)</label>
+          <input type="text" id="masterSeniorQCInput" class="form-control fw-bold" placeholder="Senior QC Name">
+        </div>
+
+        <div class="col-12 text-end mt-3">
+          <button class="btn btn-action" onclick="updateMasterShift()"><i class="bi bi-check2-circle me-1"></i> Update Shift on TV System</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Toggle Password Visibility (Eye Icon)
+    function togglePassVisibility(inputId, eyeIconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(eyeIconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye-slash-fill');
+        icon.classList.add('bi-eye-fill');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-fill');
+        icon.classList.add('bi-eye-slash-fill');
+      }
+    }
+
+    // Always require password on page enter/reload
+    async function verifyAdminPass() {
+      const pass = document.getElementById('adminAuthPass').value;
+      if (!pass) {
+        alert("⚠️ කරුණාකර Admin Password එක ඇතුළත් කරන්න.");
+        return;
+      }
+      try {
+        const res = await fetch('/api/verify-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module_name: 'admin', password: pass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('adminAuthOverlay').style.display = 'none';
+        } else {
+          alert("❌ වැරදි Admin Password එකකි! නැවත උත්සාහ කරන්න.");
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    async function changePass(moduleName, inputId) {
+      const newPass = document.getElementById(inputId).value.trim();
+      if (!newPass) {
+        alert("⚠️ කරුණාකර අලුත් Password එක ඇතුළත් කරන්න.");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target_module: moduleName, new_password: newPass })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`✅ [${moduleName.toUpperCase()}] Password එක සාර්ථකව වෙනස් කරන ලදී!`);
+          document.getElementById(inputId).value = '';
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    const shiftDefaults = { 'Shift 01': 'Mr. Mangala', 'Shift 02': 'Mr. Gamini' };
+
+    async function loadAdminData() {
+      try {
+        const shiftRes = await fetch('/api/active-shift');
+        const activeShift = await shiftRes.json();
+        if (activeShift) {
+          document.getElementById('kpiShift').innerText = activeShift.shift_name;
+          document.getElementById('kpiLeader').innerText = activeShift.shift_leader;
+          document.getElementById('masterShiftSelect').value = activeShift.shift_name;
+          document.getElementById('masterSeniorQCInput').value = activeShift.shift_leader;
+        }
+
+        const bRes = await fetch('/api/broadcast');
+        const activeB = await bRes.json();
+        if (activeB && activeB.message) {
+          document.getElementById('broadcastInput').value = activeB.message;
+          document.getElementById('broadcastType').value = activeB.type || 'info';
+        }
+
+        const historyRes = await fetch('/api/qc-history');
+        const history = await historyRes.json();
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const todayRecords = history.filter(r => r.created_at && r.created_at.startsWith(todayStr) && r.machine_name !== 'SYSTEM_SHIFT_UPDATE');
+        document.getElementById('kpiInspections').innerText = todayRecords.length;
+
+      } catch (err) {
+        console.error("Error loading admin data:", err);
+      }
+    }
+
+    function onAdminShiftChange(val) {
+      document.getElementById('masterSeniorQCInput').value = shiftDefaults[val] || '';
+    }
+
+    async function updateMasterShift() {
+      const shift_name = document.getElementById('masterShiftSelect').value;
+      const shift_leader = document.getElementById('masterSeniorQCInput').value.trim();
+
+      if (!shift_leader) {
+        alert("⚠️ කරුණාකර Senior QC ගේ නම ඇතුළත් කරන්න.");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/update-shift', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shift_name, shift_leader })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`✅ Shift එක [${shift_name}] සහ Senior QC [${shift_leader}] ලෙස සාර්ථකව Update විය!`);
+          loadAdminData();
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    async function sendBroadcast() {
+      const message = document.getElementById('broadcastInput').value.trim();
+      const type = document.getElementById('broadcastType').value;
+
+      try {
+        const res = await fetch('/api/broadcast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, type })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert("📺 Announcement එක සාර්ථකව සියලුම TV Displays වලට Send කරන ලදී!");
+        }
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    async function clearBroadcast() {
+      document.getElementById('broadcastInput').value = '';
+      try {
+        await fetch('/api/broadcast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: '', type: 'info' })
+        });
+        alert("🧹 Announcement එක TV Displays වලින් ඉවත් කරන ලදී.");
+      } catch (err) {
+        alert("Server එකට සම්බන්ධ විය නොහැක.");
+      }
+    }
+
+    loadAdminData();
+  </script>
+</body>
+</html>
